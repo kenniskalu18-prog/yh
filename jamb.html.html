@@ -1,0 +1,1946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIRKACADEMY - JAMB UTME 2025 Examination Portal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #003366;
+            --secondary: #FFCC00;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --accent: #2c7744;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f9fc;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), #004080);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .academy-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .academy-tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-top: 10px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .timer-container {
+            background-color: var(--dark);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .timer {
+            font-size: 1.5rem;
+            color: var(--light);
+        }
+        
+        .timer.warning {
+            color: var(--warning);
+        }
+        
+        .timer.danger {
+            color: var(--danger);
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background-color: #002244;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+        
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        
+        .btn-accent {
+            background-color: var(--accent);
+        }
+        
+        .btn-accent:hover {
+            background-color: #1e5a2f;
+        }
+        
+        .quiz-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .question-container {
+            display: none;
+        }
+        
+        .question-container.active {
+            display: block;
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .question-number {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .flag-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #ccc;
+        }
+        
+        .flag-btn.flagged {
+            color: var(--warning);
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .options-container {
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .option:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .option.selected {
+            background-color: #e1f5fe;
+            border-color: var(--primary);
+        }
+        
+        .option-label {
+            font-weight: bold;
+            margin-right: 10px;
+            min-width: 30px;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .progress-container {
+            margin-top: 20px;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            transition: width 0.3s;
+        }
+        
+        .subject-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .subject-tab {
+            padding: 0.5rem 1rem;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .subject-tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .subject-tab.completed {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .question-grid-item {
+            width: 100%;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .question-grid-item:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .question-grid-item.answered {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .question-grid-item.current {
+            border-color: var(--primary);
+            border-width: 2px;
+        }
+        
+        .question-grid-item.flagged {
+            background-color: var(--warning);
+            color: white;
+            border-color: var(--warning);
+        }
+        
+        .results-container {
+            display: none;
+        }
+        
+        .score-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: var(--light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            border: 5px solid var(--primary);
+        }
+        
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .score-percentage {
+            font-size: 1.2rem;
+            color: var(--dark);
+        }
+        
+        .results-details {
+            margin-top: 30px;
+        }
+        
+        .result-item {
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
+        .result-item.correct {
+            background-color: #e8f5e9;
+            border-left: 4px solid var(--success);
+        }
+        
+        .result-item.incorrect {
+            background-color: #ffebee;
+            border-left: 4px solid var(--danger);
+        }
+        
+        .correct-answer {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .admin-panel {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .results-table th,
+        .results-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .results-table th {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .results-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .results-table tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .email-status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .email-status.success {
+            background-color: #e8f5e9;
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+        
+        .email-status.error {
+            background-color: #ffebee;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+        
+        .attempt-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .pdf-preview {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+        }
+        
+        .results-compilation {
+            margin-top: 30px;
+        }
+        
+        .compilation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .compilation-title {
+            font-size: 1.5rem;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .download-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .leaderboard {
+            margin-top: 20px;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .leaderboard-item:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .leaderboard-rank {
+            font-weight: bold;
+            color: var(--accent);
+            width: 40px;
+        }
+        
+        .leaderboard-name {
+            flex: 1;
+        }
+        
+        .leaderboard-score {
+            font-weight: bold;
+            color: var(--primary);
+            width: 80px;
+            text-align: right;
+        }
+        
+        .leaderboard-percentage {
+            width: 80px;
+            text-align: right;
+        }
+        
+        .admin-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .admin-section {
+            display: none;
+        }
+        
+        .admin-section.active {
+            display: block;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .question-grid {
+                grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            }
+            
+            .score-circle {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .score-value {
+                font-size: 2rem;
+            }
+            
+            .download-buttons {
+                flex-direction: column;
+            }
+            
+            .academy-name {
+                font-size: 2rem;
+            }
+            
+            .subject-tabs {
+                flex-direction: column;
+            }
+        }
+        
+        /* Exam security styles */
+        .exam-mode body {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        .exam-mode .context-menu {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="academy-name">SIRKACADEMY</div>
+            <div class="academy-tagline">JAMB UTME 2025 Examination Portal</div>
+            <h1>JAMB UTME Mock Examination</h1>
+            <p>Test your knowledge in English, Mathematics, Physics, Chemistry, and Biology</p>
+        </header>
+        
+        <!-- Student Info Form -->
+        <div class="card" id="student-info-form">
+            <h2>Student Information</h2>
+            <div id="attempt-warning" class="attempt-warning hidden">
+                <p><strong>Note:</strong> You can only take this exam once. If you've already taken it, you'll see your previous results.</p>
+            </div>
+            <div class="form-group">
+                <label for="student-name">Full Name</label>
+                <input type="text" id="student-name" placeholder="Enter your full name" required>
+            </div>
+            <div class="form-group">
+                <label for="student-email">Email Address</label>
+                <input type="email" id="student-email" placeholder="Enter your email address" required>
+            </div>
+            <div class="form-group">
+                <label for="student-phone">Phone Number</label>
+                <input type="tel" id="student-phone" placeholder="Enter your phone number" required>
+            </div>
+            <div class="form-group">
+                <label for="student-reg">Registration Number</label>
+                <input type="text" id="student-reg" placeholder="Enter your registration number" required>
+            </div>
+            <button class="btn" id="start-exam-btn">Start Examination</button>
+            <div id="previous-result" class="hidden">
+                <h3>Your Previous Result</h3>
+                <div id="previous-result-details"></div>
+                <button class="btn btn-warning" id="view-previous-btn">View Detailed Results</button>
+            </div>
+        </div>
+        
+        <!-- Exam Timer -->
+        <div class="timer-container hidden" id="timer-container">
+            <div>Time Remaining:</div>
+            <div class="timer" id="timer">02:00:00</div>
+        </div>
+        
+        <!-- Exam Interface -->
+        <div class="card hidden" id="exam-interface">
+            <div class="subject-tabs" id="subject-tabs">
+                <!-- Subject tabs will be generated here -->
+            </div>
+            
+            <div class="question-container active" id="question-1">
+                <div class="question-header">
+                    <div class="question-number">Question 1</div>
+                    <button class="flag-btn" data-question="1">⚐</button>
+                </div>
+                <div class="question-text" id="question-text-1"></div>
+                <div class="options-container" id="options-1"></div>
+                <div class="navigation-buttons">
+                    <button class="btn" id="prev-btn" disabled>Previous</button>
+                    <button class="btn" id="next-btn">Next</button>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-info">
+                    <div>Progress: <span id="answered-count">0</span>/180 answered</div>
+                    <div>Flagged: <span id="flagged-count">0</span></div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="question-grid" id="question-grid"></div>
+            
+            <div class="quiz-controls">
+                <button class="btn btn-warning" id="review-btn">Review Flagged Questions</button>
+                <button class="btn btn-danger" id="submit-btn">Submit Examination</button>
+            </div>
+        </div>
+        
+        <!-- Results Display -->
+        <div class="card hidden" id="results-container">
+            <div class="score-display">
+                <div class="score-circle">
+                    <div class="score-value" id="score-value">0</div>
+                    <div class="score-percentage" id="score-percentage">0%</div>
+                </div>
+                <h2>Examination Completed!</h2>
+                <p id="score-message"></p>
+            </div>
+            
+            <div class="results-details" id="results-details"></div>
+            
+            <div class="quiz-controls">
+                <button class="btn" id="retake-btn">Retake Exam</button>
+                <button class="btn btn-accent" id="view-all-results-btn">View All Results</button>
+                <button class="btn btn-success" id="download-certificate-btn">Download Certificate</button>
+            </div>
+        </div>
+        
+        <!-- All Results Compilation -->
+        <div class="card hidden" id="all-results-container">
+            <div class="compilation-header">
+                <div class="compilation-title">SIRKACADEMY - JAMB UTME 2025 Results</div>
+                <div class="download-buttons">
+                    <button class="btn btn-success" id="download-pdf-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Download PDF
+                    </button>
+                    <button class="btn btn-primary" id="download-csv-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Download CSV
+                    </button>
+                </div>
+            </div>
+            
+            <div class="leaderboard" id="leaderboard">
+                <div class="leaderboard-item" style="font-weight: bold; background-color: #f0f0f0;">
+                    <div class="leaderboard-rank">Rank</div>
+                    <div class="leaderboard-name">Student Name</div>
+                    <div class="leaderboard-score">Total Score</div>
+                    <div class="leaderboard-percentage">Percentage</div>
+                </div>
+                <div id="leaderboard-body">
+                    <!-- Leaderboard items will be populated here -->
+                </div>
+            </div>
+            
+            <div class="results-table-container">
+                <table class="results-table" id="results-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Registration No.</th>
+                            <th>English</th>
+                            <th>Mathematics</th>
+                            <th>Physics</th>
+                            <th>Chemistry</th>
+                            <th>Biology</th>
+                            <th>Total Score</th>
+                            <th>Percentage</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-table-body">
+                        <!-- Results will be populated here -->
+                    </tbody>
+                </table>
+                <div class="no-results hidden" id="no-results">No examination results found.</div>
+            </div>
+            
+            <div class="quiz-controls">
+                <button class="btn" id="back-to-results-btn">Back to My Results</button>
+                <button class="btn btn-warning" id="retake-from-all-btn">Retake Exam</button>
+            </div>
+        </div>
+        
+        <!-- Admin Panel -->
+        <div class="card admin-panel hidden" id="admin-panel">
+            <h2>Admin Dashboard</h2>
+            <div class="admin-nav">
+                <button class="btn admin-nav-btn" data-section="dashboard">Dashboard</button>
+                <button class="btn admin-nav-btn" data-section="students">Students</button>
+                <button class="btn admin-nav-btn" data-section="analytics">Analytics</button>
+                <button class="btn admin-nav-btn" data-section="settings">Settings</button>
+            </div>
+            
+            <div id="admin-dashboard" class="admin-section active">
+                <h3>Examination Overview</h3>
+                <div class="card">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background-color: #e9ecef; border-radius: 4px;">
+                            <h4>Total Students</h4>
+                            <p id="total-students">0</p>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background-color: #e9ecef; border-radius: 4px;">
+                            <h4>Average Score</h4>
+                            <p id="average-score">0</p>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background-color: #e9ecef; border-radius: 4px;">
+                            <h4>Highest Score</h4>
+                            <p id="highest-score">0</p>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background-color: #e9ecef; border-radius: 4px;">
+                            <h4>Lowest Score</h4>
+                            <p id="lowest-score">0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Recent Submissions</h3>
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Registration No.</th>
+                                <th>Score</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-submissions">
+                            <!-- Recent submissions will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="admin-students" class="admin-section">
+                <h3>All Students</h3>
+                <div class="form-group">
+                    <input type="text" id="search-students" placeholder="Search students...">
+                </div>
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Registration No.</th>
+                            <th>English</th>
+                            <th>Mathematics</th>
+                            <th>Physics</th>
+                            <th>Chemistry</th>
+                            <th>Biology</th>
+                            <th>Total</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="all-students">
+                        <!-- All students will be populated here -->
+                    </tbody>
+                </table>
+                <button id="export-results-btn" class="btn" style="margin-top: 1rem;">Export Results as PDF</button>
+            </div>
+            
+            <div id="admin-analytics" class="admin-section">
+                <h3>Performance Analytics</h3>
+                <div class="card">
+                    <h4>Subject Performance</h4>
+                    <div class="chart-container">
+                        <!-- Chart will be rendered here -->
+                        <canvas id="subject-chart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4>Score Distribution</h4>
+                    <div class="chart-container">
+                        <!-- Chart will be rendered here -->
+                        <canvas id="score-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="admin-settings" class="admin-section">
+                <h3>Exam Settings</h3>
+                <div class="card">
+                    <form id="exam-settings-form">
+                        <div class="form-group">
+                            <label for="exam-duration">Exam Duration (minutes)</label>
+                            <input type="number" id="exam-duration" value="120" min="60" max="300">
+                        </div>
+                        <div class="form-group">
+                            <label for="exam-start-date">Exam Start Date</label>
+                            <input type="datetime-local" id="exam-start-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="exam-end-date">Exam End Date</label>
+                            <input type="datetime-local" id="exam-end-date">
+                        </div>
+                        <button type="submit" class="btn">Save Settings</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JAMB UTME Examination Data
+        const examData = {
+            subjects: [
+                { id: 0, name: 'English Language', questionCount: 60, marks: 100 },
+                { id: 1, name: 'Mathematics', questionCount: 40, marks: 100 },
+                { id: 2, name: 'Physics', questionCount: 40, marks: 100 },
+                { id: 3, name: 'Chemistry', questionCount: 40, marks: 100 }
+            ],
+            totalQuestions: 180,
+            totalMarks: 400,
+            duration: 2 * 60 * 60, // 2 hours in seconds
+            questions: {
+                // English Language Questions (60)
+                0: [
+                    { id: 1, text: "Choose the word that is nearest in meaning to 'BENEVOLENT'", options: ["Kind", "Strict", "Cruel", "Indifferent"], correctAnswer: 0 },
+                    { id: 2, text: "Which of the following sentences is grammatically correct?", options: ["She don't like apples", "She doesn't like apples", "She didn't likes apples", "She not like apples"], correctAnswer: 1 },
+                    { id: 3, text: "Identify the part of speech of the underlined word: 'He ran quickly'", options: ["Noun", "Verb", "Adverb", "Adjective"], correctAnswer: 2 },
+                    { id: 4, text: "What is the opposite of 'ANCIENT'?", options: ["Old", "Modern", "Historic", "Traditional"], correctAnswer: 1 },
+                    { id: 5, text: "Which word is correctly spelled?", options: ["Accomodate", "Acommodate", "Accommodate", "Acomodate"], correctAnswer: 2 },
+                    // More English questions would be added here in a real implementation
+                ],
+                // Mathematics Questions (40)
+                1: [
+                    { id: 1, text: "If x + 2 = 5, what is the value of x?", options: ["1", "2", "3", "4"], correctAnswer: 2 },
+                    { id: 2, text: "What is the area of a circle with radius 7cm? (Take π = 22/7)", options: ["44cm²", "88cm²", "154cm²", "308cm²"], correctAnswer: 2 },
+                    { id: 3, text: "Simplify: 2x + 3y - x + 5y", options: ["x + 8y", "3x + 8y", "x + 2y", "3x + 2y"], correctAnswer: 0 },
+                    { id: 4, text: "If a triangle has angles 30°, 60°, and 90°, what type of triangle is it?", options: ["Equilateral", "Isosceles", "Right-angled", "Obtuse"], correctAnswer: 2 },
+                    { id: 5, text: "What is the square root of 144?", options: ["11", "12", "13", "14"], correctAnswer: 1 },
+                    // More Mathematics questions would be added here in a real implementation
+                ],
+                // Physics Questions (40)
+                2: [
+                    { id: 1, text: "What is the SI unit of force?", options: ["Joule", "Newton", "Watt", "Pascal"], correctAnswer: 1 },
+                    { id: 2, text: "Which of the following is a vector quantity?", options: ["Mass", "Time", "Temperature", "Velocity"], correctAnswer: 3 },
+                    { id: 3, text: "What is the acceleration due to gravity on Earth?", options: ["9.8 m/s²", "8.9 m/s²", "10 m/s²", "7.6 m/s²"], correctAnswer: 0 },
+                    { id: 4, text: "Which law states that for every action, there is an equal and opposite reaction?", options: ["Newton's First Law", "Newton's Second Law", "Newton's Third Law", "Law of Conservation of Energy"], correctAnswer: 2 },
+                    { id: 5, text: "What is the unit of electric current?", options: ["Volt", "Ampere", "Ohm", "Watt"], correctAnswer: 1 },
+                    // More Physics questions would be added here in a real implementation
+                ],
+                // Chemistry Questions (40)
+                3: [
+                    { id: 1, text: "What is the chemical symbol for gold?", options: ["Go", "Gd", "Au", "Ag"], correctAnswer: 2 },
+                    { id: 2, text: "What is the pH of a neutral solution?", options: ["0", "7", "14", "1"], correctAnswer: 1 },
+                    { id: 3, text: "Which of the following is a noble gas?", options: ["Oxygen", "Nitrogen", "Helium", "Chlorine"], correctAnswer: 2 },
+                    { id: 4, text: "What is the formula for water?", options: ["H2O", "HO2", "H2O2", "HO"], correctAnswer: 0 },
+                    { id: 5, text: "Which element has the atomic number 1?", options: ["Helium", "Oxygen", "Hydrogen", "Carbon"], correctAnswer: 2 },
+                    // More Chemistry questions would be added here in a real implementation
+                ]
+            }
+        };
+
+        // Exam state
+        let currentSubject = 0;
+        let currentQuestion = 1;
+        let userAnswers = {};
+        let flaggedQuestions = {};
+        let timer;
+        let timeLeft = examData.duration;
+        let examStarted = false;
+        let studentInfo = {};
+        let isAdmin = false;
+
+        // Initialize user answers and flagged questions
+        examData.subjects.forEach(subject => {
+            userAnswers[subject.id] = new Array(subject.questionCount).fill(null);
+            flaggedQuestions[subject.id] = new Array(subject.questionCount).fill(false);
+        });
+
+        // DOM elements
+        const studentInfoForm = document.getElementById('student-info-form');
+        const attemptWarning = document.getElementById('attempt-warning');
+        const previousResult = document.getElementById('previous-result');
+        const previousResultDetails = document.getElementById('previous-result-details');
+        const viewPreviousBtn = document.getElementById('view-previous-btn');
+        const timerContainer = document.getElementById('timer-container');
+        const timerDisplay = document.getElementById('timer');
+        const examInterface = document.getElementById('exam-interface');
+        const subjectTabs = document.getElementById('subject-tabs');
+        const questionText = document.getElementById('question-text-1');
+        const optionsContainer = document.getElementById('options-1');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressFill = document.getElementById('progress-fill');
+        const answeredCount = document.getElementById('answered-count');
+        const flaggedCount = document.getElementById('flagged-count');
+        const questionGrid = document.getElementById('question-grid');
+        const reviewBtn = document.getElementById('review-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const resultsContainer = document.getElementById('results-container');
+        const scoreValue = document.getElementById('score-value');
+        const scorePercentage = document.getElementById('score-percentage');
+        const scoreMessage = document.getElementById('score-message');
+        const resultsDetails = document.getElementById('results-details');
+        const retakeBtn = document.getElementById('retake-btn');
+        const viewAllResultsBtn = document.getElementById('view-all-results-btn');
+        const downloadCertificateBtn = document.getElementById('download-certificate-btn');
+        const allResultsContainer = document.getElementById('all-results-container');
+        const downloadPdfBtn = document.getElementById('download-pdf-btn');
+        const downloadCsvBtn = document.getElementById('download-csv-btn');
+        const leaderboardBody = document.getElementById('leaderboard-body');
+        const resultsTableBody = document.getElementById('results-table-body');
+        const noResults = document.getElementById('no-results');
+        const backToResultsBtn = document.getElementById('back-to-results-btn');
+        const retakeFromAllBtn = document.getElementById('retake-from-all-btn');
+        const adminPanel = document.getElementById('admin-panel');
+        const adminNavBtns = document.querySelectorAll('.admin-nav-btn');
+
+        // Check if email has already been used
+        function checkEmailExists(email) {
+            const allResults = JSON.parse(localStorage.getItem('jambExamResults')) || [];
+            return allResults.find(result => result.studentInfo.email.toLowerCase() === email.toLowerCase());
+        }
+
+        // Initialize the exam
+        function initExam() {
+            // Create subject tabs
+            createSubjectTabs();
+            
+            // Create question navigation grid
+            createQuestionGrid();
+            
+            // Load the first question
+            loadQuestion(currentSubject, currentQuestion);
+            
+            // Update progress
+            updateProgress();
+            
+            // Start the timer
+            startTimer();
+            
+            // Enable exam security
+            document.body.classList.add('exam-mode');
+        }
+
+        // Create subject tabs
+        function createSubjectTabs() {
+            subjectTabs.innerHTML = '';
+            
+            examData.subjects.forEach((subject, index) => {
+                const tab = document.createElement('div');
+                tab.className = 'subject-tab';
+                if (index === currentSubject) {
+                    tab.classList.add('active');
+                }
+                tab.textContent = subject.name;
+                tab.dataset.subject = index;
+                
+                tab.addEventListener('click', () => {
+                    currentSubject = parseInt(tab.dataset.subject);
+                    currentQuestion = 1;
+                    loadQuestion(currentSubject, currentQuestion);
+                    updateSubjectTabs();
+                });
+                
+                subjectTabs.appendChild(tab);
+            });
+        }
+
+        // Update subject tabs
+        function updateSubjectTabs() {
+            const tabs = document.querySelectorAll('.subject-tab');
+            tabs.forEach((tab, index) => {
+                tab.classList.remove('active');
+                if (index === currentSubject) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+
+        // Create question navigation grid
+        function createQuestionGrid() {
+            questionGrid.innerHTML = '';
+            
+            examData.subjects.forEach(subject => {
+                for (let i = 1; i <= subject.questionCount; i++) {
+                    const gridItem = document.createElement('div');
+                    gridItem.className = 'question-grid-item';
+                    gridItem.textContent = i;
+                    gridItem.dataset.subject = subject.id;
+                    gridItem.dataset.question = i;
+                    
+                    if (subject.id === currentSubject && i === 1) {
+                        gridItem.classList.add('current');
+                    }
+                    
+                    gridItem.addEventListener('click', () => {
+                        navigateToQuestion(parseInt(gridItem.dataset.subject), parseInt(gridItem.dataset.question));
+                    });
+                    
+                    questionGrid.appendChild(gridItem);
+                }
+            });
+        }
+
+        // Load a specific question
+        function loadQuestion(subjectId, questionNumber) {
+            const question = examData.questions[subjectId][questionNumber - 1];
+            
+            // Update question text
+            questionText.textContent = question.text;
+            
+            // Update options
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                if (userAnswers[subjectId][questionNumber - 1] === index) {
+                    optionElement.classList.add('selected');
+                }
+                
+                const optionLabel = document.createElement('div');
+                optionLabel.className = 'option-label';
+                optionLabel.textContent = String.fromCharCode(65 + index); // A, B, C, D
+                
+                const optionText = document.createElement('div');
+                optionText.className = 'option-text';
+                optionText.textContent = option;
+                
+                optionElement.appendChild(optionLabel);
+                optionElement.appendChild(optionText);
+                
+                optionElement.addEventListener('click', () => {
+                    selectOption(subjectId, questionNumber, index);
+                });
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Update flag button
+            const flagBtn = document.querySelector('.flag-btn');
+            flagBtn.dataset.subject = subjectId;
+            flagBtn.dataset.question = questionNumber;
+            if (flaggedQuestions[subjectId][questionNumber - 1]) {
+                flagBtn.classList.add('flagged');
+            } else {
+                flagBtn.classList.remove('flagged');
+            }
+            
+            // Update navigation buttons
+            prevBtn.disabled = subjectId === 0 && questionNumber === 1;
+            
+            if (subjectId === examData.subjects.length - 1 && questionNumber === examData.subjects[subjectId].questionCount) {
+                nextBtn.textContent = 'Finish';
+            } else if (questionNumber === examData.subjects[subjectId].questionCount) {
+                nextBtn.textContent = 'Next Subject';
+            } else {
+                nextBtn.textContent = 'Next';
+            }
+            
+            // Update question grid
+            updateQuestionGrid(subjectId, questionNumber);
+        }
+
+        // Select an option for a question
+        function selectOption(subjectId, questionNumber, optionIndex) {
+            userAnswers[subjectId][questionNumber - 1] = optionIndex;
+            
+            // Update UI
+            const options = document.querySelectorAll('.option');
+            options.forEach((option, index) => {
+                if (index === optionIndex) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+            
+            // Update progress
+            updateProgress();
+        }
+
+        // Navigate to a specific question
+        function navigateToQuestion(subjectId, questionNumber) {
+            currentSubject = subjectId;
+            currentQuestion = questionNumber;
+            loadQuestion(currentSubject, currentQuestion);
+            updateSubjectTabs();
+        }
+
+        // Update progress indicators
+        function updateProgress() {
+            let totalAnswered = 0;
+            let totalFlagged = 0;
+            
+            examData.subjects.forEach(subject => {
+                totalAnswered += userAnswers[subject.id].filter(answer => answer !== null).length;
+                totalFlagged += flaggedQuestions[subject.id].filter(flag => flag).length;
+            });
+            
+            answeredCount.textContent = totalAnswered;
+            flaggedCount.textContent = totalFlagged;
+            
+            const progressPercentage = (totalAnswered / examData.totalQuestions) * 100;
+            progressFill.style.width = `${progressPercentage}%`;
+            
+            // Update question grid
+            updateQuestionGrid(currentSubject, currentQuestion);
+        }
+
+        // Update question grid indicators
+        function updateQuestionGrid(currentSubjectId, currentQuestionNum) {
+            const gridItems = document.querySelectorAll('.question-grid-item');
+            
+            gridItems.forEach(item => {
+                const subjectId = parseInt(item.dataset.subject);
+                const questionNum = parseInt(item.dataset.question);
+                
+                // Remove current class from all items
+                item.classList.remove('current');
+                
+                // Add appropriate classes based on state
+                if (subjectId === currentSubjectId && questionNum === currentQuestionNum) {
+                    item.classList.add('current');
+                }
+                
+                if (userAnswers[subjectId][questionNum - 1] !== null) {
+                    item.classList.add('answered');
+                } else {
+                    item.classList.remove('answered');
+                }
+                
+                if (flaggedQuestions[subjectId][questionNum - 1]) {
+                    item.classList.add('flagged');
+                } else {
+                    item.classList.remove('flagged');
+                }
+            });
+        }
+
+        // Start the exam timer
+        function startTimer() {
+            examStarted = true;
+            timer = setInterval(() => {
+                timeLeft--;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    submitExam();
+                    return;
+                }
+                
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        // Update timer display
+        function updateTimerDisplay() {
+            const hours = Math.floor(timeLeft / 3600);
+            const minutes = Math.floor((timeLeft % 3600) / 60);
+            const seconds = timeLeft % 60;
+            
+            timerDisplay.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Add warning styles when time is running low
+            if (timeLeft <= 600) { // 10 minutes
+                timerDisplay.classList.add('warning');
+            }
+            
+            if (timeLeft <= 300) { // 5 minutes
+                timerDisplay.classList.add('danger');
+            }
+        }
+
+        // Submit the exam
+        function submitExam() {
+            clearInterval(timer);
+            
+            // Calculate score
+            const results = calculateScore();
+            
+            // Save results
+            saveResults(results);
+            
+            // Display results
+            displayResults(results);
+            
+            // Disable exam security
+            document.body.classList.remove('exam-mode');
+        }
+
+        // Calculate exam score
+        function calculateScore() {
+            const results = {
+                subjects: {},
+                totalScore: 0,
+                percentage: 0
+            };
+            
+            // Calculate score for each subject
+            examData.subjects.forEach(subject => {
+                let correct = 0;
+                examData.questions[subject.id].forEach((question, index) => {
+                    if (userAnswers[subject.id][index] === question.correctAnswer) {
+                        correct++;
+                    }
+                });
+                
+                const score = (correct / subject.questionCount) * subject.marks;
+                results.subjects[subject.id] = {
+                    name: subject.name,
+                    correct: correct,
+                    total: subject.questionCount,
+                    score: score.toFixed(1)
+                };
+                
+                results.totalScore += parseFloat(score.toFixed(1));
+            });
+            
+            // Calculate percentage
+            results.percentage = (results.totalScore / examData.totalMarks) * 100;
+            
+            return results;
+        }
+
+        // Save exam results to localStorage
+        function saveResults(results) {
+            const examResult = {
+                studentInfo: studentInfo,
+                answers: userAnswers,
+                results: results,
+                timeTaken: examData.duration - timeLeft,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Get existing results from localStorage
+            let allResults = JSON.parse(localStorage.getItem('jambExamResults')) || [];
+            
+            // Check if this email already has a result
+            const existingIndex = allResults.findIndex(
+                result => result.studentInfo.email.toLowerCase() === studentInfo.email.toLowerCase()
+            );
+            
+            // If exists, replace it; otherwise add new
+            if (existingIndex !== -1) {
+                allResults[existingIndex] = examResult;
+            } else {
+                allResults.push(examResult);
+            }
+            
+            // Save back to localStorage
+            localStorage.setItem('jambExamResults', JSON.stringify(allResults));
+        }
+
+        // Format time in MM:SS format
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        // Display exam results
+        function displayResults(results) {
+            // Hide exam interface, show results
+            examInterface.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+            
+            // Update score display
+            scoreValue.textContent = results.totalScore.toFixed(1);
+            scorePercentage.textContent = `${results.percentage.toFixed(1)}%`;
+            
+            // Set score message
+            if (results.percentage >= 80) {
+                scoreMessage.textContent = "Excellent! You have a strong understanding of all subjects.";
+            } else if (results.percentage >= 60) {
+                scoreMessage.textContent = "Good job! You have a good grasp of the subjects.";
+            } else if (results.percentage >= 40) {
+                scoreMessage.textContent = "Fair performance. Consider reviewing the areas you struggled with.";
+            } else {
+                scoreMessage.textContent = "You may need more practice. Review the concepts and try again.";
+            }
+            
+            // Display detailed results
+            resultsDetails.innerHTML = '';
+            
+            examData.subjects.forEach(subject => {
+                const subjectResult = results.subjects[subject.id];
+                
+                const subjectCard = document.createElement('div');
+                subjectCard.className = 'card';
+                subjectCard.innerHTML = `
+                    <h3>${subjectResult.name}</h3>
+                    <p><strong>Score:</strong> ${subjectResult.score}/${subject.marks}</p>
+                    <p><strong>Correct Answers:</strong> ${subjectResult.correct}/${subjectResult.total}</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${(subjectResult.correct / subjectResult.total) * 100}%"></div>
+                    </div>
+                `;
+                
+                resultsDetails.appendChild(subjectCard);
+            });
+        }
+
+        // Display all results compilation
+        function displayAllResults() {
+            resultsContainer.classList.add('hidden');
+            allResultsContainer.classList.remove('hidden');
+            
+            // Get results from localStorage
+            const allResults = JSON.parse(localStorage.getItem('jambExamResults')) || [];
+            
+            if (allResults.length === 0) {
+                noResults.classList.remove('hidden');
+                document.getElementById('results-table').classList.add('hidden');
+                leaderboardBody.innerHTML = '<div class="leaderboard-item"><div class="leaderboard-name" style="text-align: center;">No results available</div></div>';
+            } else {
+                noResults.classList.add('hidden');
+                document.getElementById('results-table').classList.remove('hidden');
+                
+                // Sort results by total score (descending)
+                const sortedResults = [...allResults].sort((a, b) => b.results.totalScore - a.results.totalScore);
+                
+                // Populate leaderboard
+                leaderboardBody.innerHTML = '';
+                sortedResults.forEach((result, index) => {
+                    const leaderboardItem = document.createElement('div');
+                    leaderboardItem.className = 'leaderboard-item';
+                    
+                    // Highlight current user
+                    if (result.studentInfo.email === studentInfo.email) {
+                        leaderboardItem.style.backgroundColor = '#e1f5fe';
+                        leaderboardItem.style.fontWeight = 'bold';
+                    }
+                    
+                    leaderboardItem.innerHTML = `
+                        <div class="leaderboard-rank">${index + 1}</div>
+                        <div class="leaderboard-name">${result.studentInfo.name}</div>
+                        <div class="leaderboard-score">${result.results.totalScore.toFixed(1)}/${examData.totalMarks}</div>
+                        <div class="leaderboard-percentage">${result.results.percentage.toFixed(1)}%</div>
+                    `;
+                    
+                    leaderboardBody.appendChild(leaderboardItem);
+                });
+                
+                // Populate results table
+                resultsTableBody.innerHTML = '';
+                sortedResults.forEach((result, index) => {
+                    const row = document.createElement('tr');
+                    
+                    // Highlight current user
+                    if (result.studentInfo.email === studentInfo.email) {
+                        row.style.backgroundColor = '#e1f5fe';
+                        row.style.fontWeight = 'bold';
+                    }
+                    
+                    const date = new Date(result.timestamp);
+                    const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+                    
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${result.studentInfo.name}</td>
+                        <td>${result.studentInfo.email}</td>
+                        <td>${result.studentInfo.regNumber}</td>
+                        <td>${result.results.subjects[0].score}</td>
+                        <td>${result.results.subjects[1].score}</td>
+                        <td>${result.results.subjects[2].score}</td>
+                        <td>${result.results.subjects[3].score}</td>
+                        <td>${result.results.totalScore.toFixed(1)}</td>
+                        <td>${result.results.percentage.toFixed(1)}%</td>
+                        <td>${formattedDate}</td>
+                    `;
+                    
+                    resultsTableBody.appendChild(row);
+                });
+            }
+        }
+
+        // Generate and download PDF of all results
+        function downloadResultsPDF() {
+            const allResults = JSON.parse(localStorage.getItem('jambExamResults')) || [];
+            
+            if (allResults.length === 0) {
+                alert('No results to download.');
+                return;
+            }
+            
+            // Sort results by total score (descending)
+            const sortedResults = [...allResults].sort((a, b) => b.results.totalScore - a.results.totalScore);
+            
+            // Create PDF content
+            const pdfHTML = `
+                <div style="font-family: Arial, sans-serif; padding: 20px;">
+                    <h1 style="text-align: center; color: #003366; margin-bottom: 5px;">SIRKACADEMY</h1>
+                    <p style="text-align: center; color: #7f8c8d; margin-bottom: 20px;">JAMB UTME 2025 Examination - Results</p>
+                    <p style="text-align: center; color: #7f8c8d;">Generated on ${new Date().toLocaleString()}</p>
+                    
+                    <div style="margin: 30px 0;">
+                        <h2 style="color: #2c3e50; border-bottom: 2px solid #003366; padding-bottom: 10px;">Performance Summary</h2>
+                        <p><strong>Total Participants:</strong> ${allResults.length}</p>
+                        <p><strong>Average Score:</strong> ${(allResults.reduce((sum, result) => sum + result.results.totalScore, 0) / allResults.length).toFixed(1)}/${examData.totalMarks}</p>
+                        <p><strong>Average Percentage:</strong> ${(allResults.reduce((sum, result) => sum + result.results.percentage, 0) / allResults.length).toFixed(1)}%</p>
+                    </div>
+                    
+                    <h2 style="color: #2c3e50; border-bottom: 2px solid #003366; padding-bottom: 10px;">Leaderboard</h2>
+                    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                        <thead>
+                            <tr style="background-color: #2c3e50; color: white;">
+                                <th style="padding: 10px; border: 1px solid #ddd;">Rank</th>
+                                <th style="padding: 10px; border: 1px solid #ddd;">Name</th>
+                                <th style="padding: 10px; border: 1px solid #ddd;">Score</th>
+                                <th style="padding: 10px; border: 1px solid #ddd;">Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${sortedResults.map((result, index) => `
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">${index + 1}</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">${result.studentInfo.name}</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">${result.results.totalScore.toFixed(1)}/${examData.totalMarks}</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">${result.results.percentage.toFixed(1)}%</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <div style="margin-top: 30px; page-break-before: always;">
+                        <h2 style="color: #2c3e50; border-bottom: 2px solid #003366; padding-bottom: 10px;">Detailed Results</h2>
+                        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                            <thead>
+                                <tr style="background-color: #2c3e50; color: white;">
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Rank</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Name</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Email</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Registration No.</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">English</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Mathematics</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Physics</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Chemistry</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Total Score</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Percentage</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${sortedResults.map((result, index) => {
+                                    const date = new Date(result.timestamp);
+                                    const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+                                    
+                                    return `
+                                        <tr>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${index + 1}</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${result.studentInfo.name}</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${result.studentInfo.email}</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${result.studentInfo.regNumber}</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${result.results.subjects[0].score}</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${result.results.subjects[1].score}</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${result.results.subjects[2].score}</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${result.results.subjects[3].score}</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${result.results.totalScore.toFixed(1)}</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${result.results.percentage.toFixed(1)}%</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${formattedDate}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            
+            // For demo purposes, show a preview and download as HTML
+            const blob = new Blob([pdfHTML], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'SIRKACADEMY_JAMB_UTME_2025_Results.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('PDF download started. In a real implementation, this would be a proper PDF file.');
+        }
+
+        // Export results as CSV
+        function exportResultsCSV() {
+            const allResults = JSON.parse(localStorage.getItem('jambExamResults')) || [];
+            
+            if (allResults.length === 0) {
+                alert('No results to export.');
+                return;
+            }
+            
+            // Sort results by total score (descending)
+            const sortedResults = [...allResults].sort((a, b) => b.results.totalScore - a.results.totalScore);
+            
+            // Create CSV header
+            let csv = 'Rank,Name,Email,Registration No.,English,Mathematics,Physics,Chemistry,Total Score,Percentage,Date\n';
+            
+            // Add data rows
+            sortedResults.forEach((result, index) => {
+                const date = new Date(result.timestamp);
+                const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+                
+                csv += `${index + 1},"${result.studentInfo.name}","${result.studentInfo.email}","${result.studentInfo.regNumber}",${result.results.subjects[0].score},${result.results.subjects[1].score},${result.results.subjects[2].score},${result.results.subjects[3].score},${result.results.totalScore.toFixed(1)},${result.results.percentage.toFixed(1)}%,"${formattedDate}"\n`;
+            });
+            
+            // Create download link
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'SIRKACADEMY_JAMB_UTME_2025_Results.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Show previous result if email exists
+        function showPreviousResult(email) {
+            const previous = checkEmailExists(email);
+            if (previous) {
+                attemptWarning.classList.remove('hidden');
+                previousResult.classList.remove('hidden');
+                
+                previousResultDetails.innerHTML = `
+                    <p><strong>Score:</strong> ${previous.results.totalScore.toFixed(1)}/${examData.totalMarks} (${previous.results.percentage.toFixed(1)}%)</p>
+                    <p><strong>Date:</strong> ${new Date(previous.timestamp).toLocaleString()}</p>
+                `;
+                
+                return true;
+            }
+            return false;
+        }
+
+        // Admin functionality
+        function showAdminPanel() {
+            studentInfoForm.classList.add('hidden');
+            examInterface.classList.add('hidden');
+            resultsContainer.classList.add('hidden');
+            allResultsContainer.classList.add('hidden');
+            adminPanel.classList.remove('hidden');
+            
+            loadAdminData();
+        }
+
+        function loadAdminData() {
+            const allResults = JSON.parse(localStorage.getItem('jambExamResults')) || [];
+            document.getElementById('total-students').textContent = allResults.length;
+            
+            if (allResults.length > 0) {
+                const totalScores = allResults.map(result => result.results.totalScore);
+                const averageScore = totalScores.reduce((a, b) => a + b, 0) / totalScores.length;
+                const highestScore = Math.max(...totalScores);
+                const lowestScore = Math.min(...totalScores);
+                
+                document.getElementById('average-score').textContent = averageScore.toFixed(1);
+                document.getElementById('highest-score').textContent = highestScore.toFixed(1);
+                document.getElementById('lowest-score').textContent = lowestScore.toFixed(1);
+                
+                // Populate recent submissions
+                const recentSubmissions = allResults.slice(-5).reverse();
+                const recentSubmissionsHTML = recentSubmissions.map(result => `
+                    <tr>
+                        <td>${result.studentInfo.name}</td>
+                        <td>${result.studentInfo.regNumber}</td>
+                        <td>${result.results.totalScore.toFixed(1)}/${examData.totalMarks}</td>
+                        <td>${new Date(result.timestamp).toLocaleDateString()}</td>
+                    </tr>
+                `).join('');
+                document.getElementById('recent-submissions').innerHTML = recentSubmissionsHTML;
+                
+                // Populate all students table
+                const allStudentsHTML = allResults.map(result => `
+                    <tr>
+                        <td>${result.studentInfo.name}</td>
+                        <td>${result.studentInfo.email}</td>
+                        <td>${result.studentInfo.phone}</td>
+                        <td>${result.studentInfo.regNumber}</td>
+                        <td>${result.results.subjects[0].score}</td>
+                        <td>${result.results.subjects[1].score}</td>
+                        <td>${result.results.subjects[2].score}</td>
+                        <td>${result.results.subjects[3].score}</td>
+                        <td>${result.results.totalScore.toFixed(1)}</td>
+                        <td>${new Date(result.timestamp).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn btn-secondary" onclick="viewStudentDetails('${result.studentInfo.regNumber}')">View</button>
+                        </td>
+                    </tr>
+                `).join('');
+                document.getElementById('all-students').innerHTML = allStudentsHTML;
+            }
+            
+            // Initialize charts (simplified for this demo)
+            initializeCharts();
+        }
+
+        function initializeCharts() {
+            // This would initialize charts using a library like Chart.js
+            // For this demo, we'll just display placeholder text
+            document.getElementById('subject-chart').innerHTML = '<p style="text-align: center; padding: 100px 0;">Subject Performance Chart</p>';
+            document.getElementById('score-chart').innerHTML = '<p style="text-align: center; padding: 100px 0;">Score Distribution Chart</p>';
+        }
+
+        function showAdminSection(sectionId) {
+            // Hide all admin sections
+            document.querySelectorAll('.admin-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(`admin-${sectionId}`).classList.add('active');
+            
+            // Update active nav button
+            document.querySelectorAll('.admin-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.admin-nav-btn[data-section="${sectionId}"]`).classList.add('active');
+        }
+
+        // Global function for admin panel
+        window.viewStudentDetails = function(regNumber) {
+            alert(`Viewing details for student with registration number: ${regNumber}`);
+        };
+
+        // Event listeners
+        document.getElementById('start-exam-btn').addEventListener('click', () => {
+            const name = document.getElementById('student-name').value.trim();
+            const email = document.getElementById('student-email').value.trim();
+            const phone = document.getElementById('student-phone').value.trim();
+            const regNumber = document.getElementById('student-reg').value.trim();
+            
+            if (!name || !email || !phone || !regNumber) {
+                alert('Please enter all required information.');
+                return;
+            }
+            
+            // Check if email already exists
+            if (checkEmailExists(email)) {
+                alert('This email has already been used to take the exam. You can only take the exam once.');
+                showPreviousResult(email);
+                return;
+            }
+            
+            studentInfo = { name, email, phone, regNumber };
+            
+            studentInfoForm.classList.add('hidden');
+            timerContainer.classList.remove('hidden');
+            examInterface.classList.remove('hidden');
+            
+            initExam();
+        });
+
+        document.getElementById('student-email').addEventListener('blur', function() {
+            const email = this.value.trim();
+            if (email) {
+                showPreviousResult(email);
+            }
+        });
+
+        viewPreviousBtn.addEventListener('click', () => {
+            const email = document.getElementById('student-email').value.trim();
+            const previous = checkEmailExists(email);
+            if (previous) {
+                // Display the previous result
+                studentInfo = previous.studentInfo;
+                userAnswers = previous.answers;
+                displayResults(previous.results);
+                studentInfoForm.classList.add('hidden');
+                resultsContainer.classList.remove('hidden');
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestion > 1) {
+                navigateToQuestion(currentSubject, currentQuestion - 1);
+            } else if (currentSubject > 0) {
+                navigateToQuestion(currentSubject - 1, examData.subjects[currentSubject - 1].questionCount);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestion < examData.subjects[currentSubject].questionCount) {
+                navigateToQuestion(currentSubject, currentQuestion + 1);
+            } else if (currentSubject < examData.subjects.length - 1) {
+                navigateToQuestion(currentSubject + 1, 1);
+            } else {
+                submitExam();
+            }
+        });
+
+        document.querySelector('.flag-btn').addEventListener('click', (e) => {
+            const subjectId = parseInt(e.target.dataset.subject);
+            const questionNum = parseInt(e.target.dataset.question);
+            flaggedQuestions[subjectId][questionNum - 1] = !flaggedQuestions[subjectId][questionNum - 1];
+            e.target.classList.toggle('flagged');
+            updateProgress();
+        });
+
+        reviewBtn.addEventListener('click', () => {
+            let foundFlagged = false;
+            
+            // Search for flagged questions
+            for (let subjectId = 0; subjectId < examData.subjects.length; subjectId++) {
+                for (let questionNum = 1; questionNum <= examData.subjects[subjectId].questionCount; questionNum++) {
+                    if (flaggedQuestions[subjectId][questionNum - 1]) {
+                        navigateToQuestion(subjectId, questionNum);
+                        foundFlagged = true;
+                        break;
+                    }
+                }
+                if (foundFlagged) break;
+            }
+            
+            if (!foundFlagged) {
+                alert('No questions have been flagged for review.');
+            }
+        });
+
+        submitBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to submit your examination? You cannot change your answers after submission.')) {
+                submitExam();
+            }
+        });
+
+        retakeBtn.addEventListener('click', () => {
+            // Reset exam state
+            currentSubject = 0;
+            currentQuestion = 1;
+            
+            examData.subjects.forEach(subject => {
+                userAnswers[subject.id] = new Array(subject.questionCount).fill(null);
+                flaggedQuestions[subject.id] = new Array(subject.questionCount).fill(false);
+            });
+            
+            timeLeft = examData.duration;
+            
+            // Show student info form again
+            resultsContainer.classList.add('hidden');
+            studentInfoForm.classList.remove('hidden');
+            
+            // Reset form
+            document.getElementById('student-name').value = '';
+            document.getElementById('student-email').value = '';
+            document.getElementById('student-phone').value = '';
+            document.getElementById('student-reg').value = '';
+            previousResult.classList.add('hidden');
+            attemptWarning.classList.add('hidden');
+        });
+
+        viewAllResultsBtn.addEventListener('click', displayAllResults);
+
+        downloadCertificateBtn.addEventListener('click', () => {
+            alert('Certificate download would be implemented here in a real application.');
+        });
+
+        downloadPdfBtn.addEventListener('click', downloadResultsPDF);
+
+        downloadCsvBtn.addEventListener('click', exportResultsCSV);
+
+        backToResultsBtn.addEventListener('click', () => {
+            allResultsContainer.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+        });
+
+        retakeFromAllBtn.addEventListener('click', () => {
+            // Reset exam state
+            currentSubject = 0;
+            currentQuestion = 1;
+            
+            examData.subjects.forEach(subject => {
+                userAnswers[subject.id] = new Array(subject.questionCount).fill(null);
+                flaggedQuestions[subject.id] = new Array(subject.questionCount).fill(false);
+            });
+            
+            timeLeft = examData.duration;
+            
+            // Show student info form again
+            allResultsContainer.classList.add('hidden');
+            studentInfoForm.classList.remove('hidden');
+            
+            // Reset form
+            document.getElementById('student-name').value = '';
+            document.getElementById('student-email').value = '';
+            document.getElementById('student-phone').value = '';
+            document.getElementById('student-reg').value = '';
+            previousResult.classList.add('hidden');
+            attemptWarning.classList.add('hidden');
+        });
+
+        // Admin navigation
+        adminNavBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                showAdminSection(this.dataset.section);
+            });
+        });
+
+        // Check if user is trying to access admin panel
+        if (window.location.hash === '#admin') {
+            const adminEmail = prompt('Enter admin email:');
+            const adminPassword = prompt('Enter admin password:');
+            
+            if (adminEmail === 'kenniskalu18@gmail.com' && adminPassword === 'admin123') {
+                isAdmin = true;
+                showAdminPanel();
+            } else {
+                alert('Invalid admin credentials');
+            }
+        }
+
+        // Setup exam security
+        document.addEventListener('contextmenu', function(e) {
+            if (document.body.classList.contains('exam-mode')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        document.addEventListener('copy', function(e) {
+            if (document.body.classList.contains('exam-mode')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        document.addEventListener('cut', function(e) {
+            if (document.body.classList.contains('exam-mode')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        document.addEventListener('paste', function(e) {
+            if (document.body.classList.contains('exam-mode')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        window.addEventListener('popstate', function(e) {
+            if (document.body.classList.contains('exam-mode')) {
+                history.pushState(null, null, window.location.href);
+            }
+        });
+        
+        window.addEventListener('beforeunload', function(e) {
+            if (document.body.classList.contains('exam-mode')) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        });
+    </script>
+</body>
+</html>
