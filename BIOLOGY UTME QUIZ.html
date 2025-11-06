@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIRKACADEMY - Biology Quiz: Living Things & Cells</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #2c7744;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --accent: #2c7744;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f9fc;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .academy-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .academy-tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-top: 10px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .timer-container {
+            background-color: var(--dark);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .timer {
+            font-size: 1.5rem;
+            color: var(--light);
+        }
+        
+        .timer.warning {
+            color: var(--warning);
+        }
+        
+        .timer.danger {
+            color: var(--danger);
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background-color: #388E3C;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+        }
+        
+        .btn-warning:hover {
+            background-color: #d35400;
+        }
+        
+        .btn-accent {
+            background-color: var(--accent);
+        }
+        
+        .btn-accent:hover {
+            background-color: #1e5a2f;
+        }
+        
+        .quiz-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .question-container {
+            display: none;
+        }
+        
+        .question-container.active {
+            display: block;
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .question-number {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .flag-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #ccc;
+        }
+        
+        .flag-btn.flagged {
+            color: var(--warning);
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .options-container {
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .option:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .option.selected {
+            background-color: #e1f5fe;
+            border-color: var(--primary);
+        }
+        
+        .option-label {
+            font-weight: bold;
+            margin-right: 10px;
+            min-width: 30px;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .progress-container {
+            margin-top: 20px;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            transition: width 0.3s;
+        }
+        
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .question-grid-item {
+            width: 100%;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .question-grid-item:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .question-grid-item.answered {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .question-grid-item.current {
+            border-color: var(--primary);
+            border-width: 2px;
+        }
+        
+        .question-grid-item.flagged {
+            background-color: var(--warning);
+            color: white;
+            border-color: var(--warning);
+        }
+        
+        .results-container {
+            display: none;
+        }
+        
+        .score-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: var(--light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            border: 5px solid var(--primary);
+        }
+        
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .score-percentage {
+            font-size: 1.2rem;
+            color: var(--dark);
+        }
+        
+        .results-details {
+            margin-top: 30px;
+        }
+        
+        .result-item {
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
+        .result-item.correct {
+            background-color: #e8f5e9;
+            border-left: 4px solid var(--success);
+        }
+        
+        .result-item.incorrect {
+            background-color: #ffebee;
+            border-left: 4px solid var(--danger);
+        }
+        
+        .correct-answer {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .admin-panel {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .results-table th,
+        .results-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .results-table th {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .results-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .results-table tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .email-status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .email-status.success {
+            background-color: #e8f5e9;
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+        
+        .email-status.error {
+            background-color: #ffebee;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+        
+        .attempt-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .pdf-preview {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+        }
+        
+        .results-compilation {
+            margin-top: 30px;
+        }
+        
+        .compilation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .compilation-title {
+            font-size: 1.5rem;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .download-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .leaderboard {
+            margin-top: 20px;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .leaderboard-item:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .leaderboard-rank {
+            font-weight: bold;
+            color: var(--accent);
+            width: 40px;
+        }
+        
+        .leaderboard-name {
+            flex: 1;
+        }
+        
+        .leaderboard-score {
+            font-weight: bold;
+            color: var(--primary);
+            width: 80px;
+            text-align: right;
+        }
+        
+        .leaderboard-percentage {
+            width: 80px;
+            text-align: right;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .question-grid {
+                grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            }
+            
+            .score-circle {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .score-value {
+                font-size: 2rem;
+            }
+            
+            .download-buttons {
+                flex-direction: column;
+            }
+            
+            .academy-name {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="academy-name">SIRKACADEMY</div>
+            <div class="academy-tagline">Excellence in Biology Education</div>
+            <h1>Biology Quiz: Living Things & Cells</h1>
+            <p>Test your understanding of living organisms and cellular biology</p>
+        </header>
+        
+        <!-- Student Info Form -->
+        <div class="card" id="student-info-form">
+            <h2>Student Information</h2>
+            <div id="attempt-warning" class="attempt-warning hidden">
+                <p><strong>Note:</strong> You can only take this quiz once. If you've already taken it, you'll see your previous results.</p>
+            </div>
+            <div class="form-group">
+                <label for="student-name">Full Name</label>
+                <input type="text" id="student-name" placeholder="Enter your full name" required>
+            </div>
+            <div class="form-group">
+                <label for="student-email">Email Address</label>
+                <input type="email" id="student-email" placeholder="Enter your email address" required>
+            </div>
+            <button class="btn" id="start-quiz-btn">Start Quiz</button>
+            <div id="previous-result" class="hidden">
+                <h3>Your Previous Result</h3>
+                <div id="previous-result-details"></div>
+                <button class="btn btn-warning" id="view-previous-btn">View Detailed Results</button>
+            </div>
+        </div>
+        
+        <!-- Quiz Timer -->
+        <div class="timer-container hidden" id="timer-container">
+            <div>Time Remaining:</div>
+            <div class="timer" id="timer">30:00</div>
+        </div>
+        
+        <!-- Quiz Interface -->
+        <div class="card hidden" id="quiz-interface">
+            <div class="question-container active" id="question-1">
+                <div class="question-header">
+                    <div class="question-number">Question 1</div>
+                    <button class="flag-btn" data-question="1">⚐</button>
+                </div>
+                <div class="question-text" id="question-text-1"></div>
+                <div class="options-container" id="options-1"></div>
+                <div class="navigation-buttons">
+                    <button class="btn" id="prev-btn" disabled>Previous</button>
+                    <button class="btn" id="next-btn">Next</button>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-info">
+                    <div>Progress: <span id="answered-count">0</span>/50 answered</div>
+                    <div>Flagged: <span id="flagged-count">0</span></div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="question-grid" id="question-grid"></div>
+            
+            <div class="quiz-controls">
+                <button class="btn btn-warning" id="review-btn">Review Flagged Questions</button>
+                <button class="btn btn-danger" id="submit-btn">Submit Quiz</button>
+            </div>
+        </div>
+        
+        <!-- Results Display -->
+        <div class="card hidden" id="results-container">
+            <div class="score-display">
+                <div class="score-circle">
+                    <div class="score-value" id="score-value">0</div>
+                    <div class="score-percentage" id="score-percentage">0%</div>
+                </div>
+                <h2>Quiz Completed!</h2>
+                <p id="score-message"></p>
+            </div>
+            
+            <div class="email-status hidden" id="email-status"></div>
+            
+            <div class="results-details" id="results-details"></div>
+            
+            <div class="quiz-controls">
+                <button class="btn" id="retake-btn">Retake Quiz</button>
+                <button class="btn btn-accent" id="view-all-results-btn">View All Results</button>
+            </div>
+        </div>
+        
+        <!-- All Results Compilation -->
+        <div class="card hidden" id="all-results-container">
+            <div class="compilation-header">
+                <div class="compilation-title">SIRKACADEMY - All Biology Quiz Results</div>
+                <div class="download-buttons">
+                    <button class="btn btn-success" id="download-pdf-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Download PDF
+                    </button>
+                    <button class="btn btn-primary" id="download-csv-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Download CSV
+                    </button>
+                </div>
+            </div>
+            
+            <div class="leaderboard" id="leaderboard">
+                <div class="leaderboard-item" style="font-weight: bold; background-color: #f0f0f0;">
+                    <div class="leaderboard-rank">Rank</div>
+                    <div class="leaderboard-name">Student Name</div>
+                    <div class="leaderboard-score">Score</div>
+                    <div class="leaderboard-percentage">Percentage</div>
+                </div>
+                <div id="leaderboard-body">
+                    <!-- Leaderboard items will be populated here -->
+                </div>
+            </div>
+            
+            <div class="results-table-container">
+                <table class="results-table" id="results-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Score</th>
+                            <th>Percentage</th>
+                            <th>Time Taken</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-table-body">
+                        <!-- Results will be populated here -->
+                    </tbody>
+                </table>
+                <div class="no-results hidden" id="no-results">No quiz results found.</div>
+            </div>
+            
+            <div class="quiz-controls">
+                <button class="btn" id="back-to-results-btn">Back to My Results</button>
+                <button class="btn btn-warning" id="retake-from-all-btn">Retake Quiz</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quiz questions data - Based on the Biology lesson content
+        const quizQuestions = [
+            // Characteristics of Living Things (15 questions)
+            {
+                id: 1,
+                section: "Characteristics of Living Things",
+                question: "What does the 'M' in MR NIGER CAD stand for?",
+                options: ["Movement", "Metabolism", "Membrane", "Mitosis"],
+                correctAnswer: 0
+            },
+            {
+                id: 2,
+                section: "Characteristics of Living Things",
+                question: "Which characteristic refers to the ability to detect and respond to changes in the environment?",
+                options: ["Respiration", "Irritability", "Nutrition", "Growth"],
+                correctAnswer: 1
+            },
+            {
+                id: 3,
+                section: "Characteristics of Living Things",
+                question: "What process involves breaking down food to release energy?",
+                options: ["Excretion", "Respiration", "Nutrition", "Reproduction"],
+                correctAnswer: 1
+            },
+            {
+                id: 4,
+                section: "Characteristics of Living Things",
+                question: "Which of the following is NOT a characteristic of living things?",
+                options: ["Movement", "Respiration", "Color change", "Growth"],
+                correctAnswer: 2
+            },
+            {
+                id: 5,
+                section: "Characteristics of Living Things",
+                question: "What does the 'C' in MR NIGER CAD represent?",
+                options: ["Cell division", "Competition", "Chlorophyll", "Circulation"],
+                correctAnswer: 1
+            },
+            {
+                id: 6,
+                section: "Characteristics of Living Things",
+                question: "Which characteristic involves the removal of waste products from the body?",
+                options: ["Excretion", "Respiration", "Nutrition", "Reproduction"],
+                correctAnswer: 0
+            },
+            {
+                id: 7,
+                section: "Characteristics of Living Things",
+                question: "What is the purpose of reproduction in living organisms?",
+                options: ["To grow larger", "To continue life and prevent extinction", "To compete for resources", "To adapt to the environment"],
+                correctAnswer: 1
+            },
+            {
+                id: 8,
+                section: "Characteristics of Living Things",
+                question: "Which characteristic refers to the ability to adjust to the environment for survival?",
+                options: ["Competition", "Adaptation", "Growth", "Irritability"],
+                correctAnswer: 1
+            },
+            {
+                id: 9,
+                section: "Characteristics of Living Things",
+                question: "What does the 'D' in MR NIGER CAD represent?",
+                options: ["Development", "Division", "Death", "Digestion"],
+                correctAnswer: 2
+            },
+            {
+                id: 10,
+                section: "Characteristics of Living Things",
+                question: "Which of these is an example of irritability in plants?",
+                options: ["Closing leaves at night", "Producing flowers", "Growing taller", "Absorbing water"],
+                correctAnswer: 0
+            },
+            {
+                id: 11,
+                section: "Characteristics of Living Things",
+                question: "Why is fire not considered a living thing?",
+                options: ["It doesn't move", "It doesn't need oxygen", "It doesn't show all 10 characteristics of life", "It doesn't produce light"],
+                correctAnswer: 2
+            },
+            {
+                id: 12,
+                section: "Characteristics of Living Things",
+                question: "Which of the following is an example of competition?",
+                options: ["A plant growing toward sunlight", "Animals fighting for food", "A person breathing", "A cell dividing"],
+                correctAnswer: 1
+            },
+            {
+                id: 13,
+                section: "Characteristics of Living Things",
+                question: "What is the difference between living and dead things?",
+                options: ["Dead things were never alive", "Living things can move, dead things cannot", "Dead things were once alive but lost life characteristics", "There is no difference"],
+                correctAnswer: 2
+            },
+            {
+                id: 14,
+                section: "Characteristics of Living Things",
+                question: "Which of these is a non-living thing?",
+                options: ["Bacteria", "Mushroom", "Rock", "Insect"],
+                correctAnswer: 2
+            },
+            {
+                id: 15,
+                section: "Characteristics of Living Things",
+                question: "What is the main reason wood is considered a dead thing?",
+                options: ["It doesn't burn", "It was once part of a living tree", "It doesn't contain cells", "It can't be used for building"],
+                correctAnswer: 1
+            },
+            
+            // Cells - General (10 questions)
+            {
+                id: 16,
+                section: "Cells - General",
+                question: "What is the basic unit of life?",
+                options: ["Atom", "Molecule", "Cell", "Organ"],
+                correctAnswer: 2
+            },
+            {
+                id: 17,
+                section: "Cells - General",
+                question: "Who discovered cells in 1665?",
+                options: ["Charles Darwin", "Robert Hooke", "Louis Pasteur", "Gregor Mendel"],
+                correctAnswer: 1
+            },
+            {
+                id: 18,
+                section: "Cells - General",
+                question: "What did Robert Hooke observe under the microscope that led to the discovery of cells?",
+                options: ["Blood", "Cork", "Leaves", "Pond water"],
+                correctAnswer: 1
+            },
+            {
+                id: 19,
+                section: "Cells - General",
+                question: "Why did Robert Hooke call them 'cells'?",
+                options: ["They looked like prison cells", "They looked like small rooms", "They contained prisoners", "They were found in cellars"],
+                correctAnswer: 1
+            },
+            {
+                id: 20,
+                section: "Cells - General",
+                question: "Approximately how many cells does the human body have?",
+                options: ["Millions", "Billions", "Trillions", "Quadrillions"],
+                correctAnswer: 2
+            },
+            {
+                id: 21,
+                section: "Cells - General",
+                question: "Which organism typically has just one cell?",
+                options: ["Human", "Tree", "Bacteria", "Fish"],
+                correctAnswer: 2
+            },
+            {
+                id: 22,
+                section: "Cells - General",
+                question: "What is the main function of cells?",
+                options: ["To provide structure and carry out functions of life", "To create energy from nothing", "To reproduce instantly", "To move organisms from place to place"],
+                correctAnswer: 0
+            },
+            {
+                id: 23,
+                section: "Cells - General",
+                question: "Which of these statements about cells is TRUE?",
+                options: ["All cells are visible to the naked eye", "Cells can only be found in animals", "All living things are made of cells", "Cells don't need energy to function"],
+                correctAnswer: 2
+            },
+            {
+                id: 24,
+                section: "Cells - General",
+                question: "What is the relationship between cells and organisms?",
+                options: ["Cells are always larger than organisms", "Organisms are made of cells", "Cells and organisms are the same thing", "Organisms create cells"],
+                correctAnswer: 1
+            },
+            {
+                id: 25,
+                section: "Cells - General",
+                question: "Which tool is essential for viewing most cells?",
+                options: ["Telescope", "Microscope", "Magnifying glass", "Spectacles"],
+                correctAnswer: 1
+            },
+            
+            // Prokaryotic Cells (10 questions)
+            {
+                id: 26,
+                section: "Prokaryotic Cells",
+                question: "What is the main characteristic of prokaryotic cells?",
+                options: ["They have a true nucleus", "They lack a true nucleus", "They are always multicellular", "They have membrane-bound organelles"],
+                correctAnswer: 1
+            },
+            {
+                id: 27,
+                section: "Prokaryotic Cells",
+                question: "Which organisms have prokaryotic cells?",
+                options: ["Animals", "Plants", "Bacteria", "Fungi"],
+                correctAnswer: 2
+            },
+            {
+                id: 28,
+                section: "Prokaryotic Cells",
+                question: "How is DNA arranged in prokaryotic cells?",
+                options: ["In linear chromosomes", "In a single circular chromosome", "In multiple nuclei", "It doesn't contain DNA"],
+                correctAnswer: 1
+            },
+            {
+                id: 29,
+                section: "Prokaryotic Cells",
+                question: "What type of ribosomes do prokaryotic cells have?",
+                options: ["50S", "60S", "70S", "80S"],
+                correctAnswer: 2
+            },
+            {
+                id: 30,
+                section: "Prokaryotic Cells",
+                question: "How do prokaryotic cells divide?",
+                options: ["Mitosis", "Meiosis", "Binary fission", "Budding"],
+                correctAnswer: 2
+            },
+            {
+                id: 31,
+                section: "Prokaryotic Cells",
+                question: "Which structure is found in prokaryotic cells but not in eukaryotic cells?",
+                options: ["Cell membrane", "Peptidoglycan cell wall", "Cytoplasm", "Ribosomes"],
+                correctAnswer: 1
+            },
+            {
+                id: 32,
+                section: "Prokaryotic Cells",
+                question: "What is the typical size range of prokaryotic cells?",
+                options: ["0.1-5.0 μm", "10-100 μm", "1-10 mm", "100-1000 μm"],
+                correctAnswer: 0
+            },
+            {
+                id: 33,
+                section: "Prokaryotic Cells",
+                question: "Which of these is NOT a feature of prokaryotic cells?",
+                options: ["No membrane-bound organelles", "Circular DNA", "True nucleus", "Small ribosomes"],
+                correctAnswer: 2
+            },
+            {
+                id: 34,
+                section: "Prokaryotic Cells",
+                question: "What does 'prokaryotic' literally mean?",
+                options: ["Before nucleus", "True nucleus", "Many nuclei", "Small nucleus"],
+                correctAnswer: 0
+            },
+            {
+                id: 35,
+                section: "Prokaryotic Cells",
+                question: "Which of these is an example of a prokaryotic organism?",
+                options: ["Mushroom", "E. coli bacteria", "Oak tree", "Human"],
+                correctAnswer: 1
+            },
+            
+            // Eukaryotic Cells (10 questions)
+            {
+                id: 36,
+                section: "Eukaryotic Cells",
+                question: "What is the main characteristic of eukaryotic cells?",
+                options: ["They lack a nucleus", "They have a true nucleus", "They are always unicellular", "They don't have DNA"],
+                correctAnswer: 1
+            },
+            {
+                id: 37,
+                section: "Eukaryotic Cells",
+                question: "Which organisms have eukaryotic cells?",
+                options: ["Bacteria", "Animals, plants, fungi, and protists", "Only animals", "Only plants"],
+                correctAnswer: 1
+            },
+            {
+                id: 38,
+                section: "Eukaryotic Cells",
+                question: "How is DNA arranged in eukaryotic cells?",
+                options: ["In a single circular chromosome", "Floating freely in cytoplasm", "In multiple linear chromosomes", "It doesn't contain DNA"],
+                correctAnswer: 2
+            },
+            {
+                id: 39,
+                section: "Eukaryotic Cells",
+                question: "What type of ribosomes do eukaryotic cells have?",
+                options: ["50S", "60S", "70S", "80S"],
+                correctAnswer: 3
+            },
+            {
+                id: 40,
+                section: "Eukaryotic Cells",
+                question: "Which of these is a membrane-bound organelle found in eukaryotic cells?",
+                options: ["Ribosome", "Mitochondria", "Cytoplasm", "Cell wall"],
+                correctAnswer: 1
+            },
+            {
+                id: 41,
+                section: "Eukaryotic Cells",
+                question: "What is the typical size range of eukaryotic cells?",
+                options: ["0.1-5.0 μm", "10-100 μm", "1-10 mm", "100-1000 μm"],
+                correctAnswer: 1
+            },
+            {
+                id: 42,
+                section: "Eukaryotic Cells",
+                question: "How do eukaryotic cells divide?",
+                options: ["Binary fission", "Mitosis or meiosis", "Budding", "Fragmentation"],
+                correctAnswer: 1
+            },
+            {
+                id: 43,
+                section: "Eukaryotic Cells",
+                question: "What does 'eukaryotic' literally mean?",
+                options: ["Before nucleus", "True nucleus", "Many nuclei", "Small nucleus"],
+                correctAnswer: 1
+            },
+            {
+                id: 44,
+                section: "Eukaryotic Cells",
+                question: "Which structure is found in both prokaryotic and eukaryotic cells?",
+                options: ["Nucleus", "Cell membrane", "Mitochondria", "Chloroplasts"],
+                correctAnswer: 1
+            },
+            {
+                id: 45,
+                section: "Eukaryotic Cells",
+                question: "Which of these is NOT a feature of eukaryotic cells?",
+                options: ["Membrane-bound organelles", "Linear DNA in chromosomes", "True nucleus", "Circular DNA floating in cytoplasm"],
+                correctAnswer: 3
+            },
+            
+            // Plant vs Animal Cells (5 questions)
+            {
+                id: 46,
+                section: "Plant vs Animal Cells",
+                question: "Which structure is found in plant cells but not in animal cells?",
+                options: ["Cell membrane", "Nucleus", "Cell wall", "Mitochondria"],
+                correctAnswer: 2
+            },
+            {
+                id: 47,
+                section: "Plant vs Animal Cells",
+                question: "What is the function of chloroplasts in plant cells?",
+                options: ["Storage", "Photosynthesis", "Protein synthesis", "Cell division"],
+                correctAnswer: 1
+            },
+            {
+                id: 48,
+                section: "Plant vs Animal Cells",
+                question: "Which of these describes the shape of plant cells?",
+                options: ["Round", "Irregular", "Rectangular", "Spiral"],
+                correctAnswer: 2
+            },
+            {
+                id: 49,
+                section: "Plant vs Animal Cells",
+                question: "What is the main function of the large central vacuole in plant cells?",
+                options: ["Energy production", "Storage of water and nutrients", "Protein synthesis", "Cell movement"],
+                correctAnswer: 1
+            },
+            {
+                id: 50,
+                section: "Plant vs Animal Cells",
+                question: "Which of these statements is TRUE about animal cells?",
+                options: ["They have chloroplasts", "They have a cell wall", "They depend on food from others", "They are always rectangular"],
+                correctAnswer: 2
+            }
+        ];
+
+        // Quiz state
+        let currentQuestion = 1;
+        let userAnswers = new Array(quizQuestions.length).fill(null);
+        let flaggedQuestions = new Array(quizQuestions.length).fill(false);
+        let timer;
+        let timeLeft = 30 * 60; // 30 minutes in seconds
+        let quizStarted = false;
+        let studentInfo = {};
+
+        // DOM elements
+        const studentInfoForm = document.getElementById('student-info-form');
+        const attemptWarning = document.getElementById('attempt-warning');
+        const previousResult = document.getElementById('previous-result');
+        const previousResultDetails = document.getElementById('previous-result-details');
+        const viewPreviousBtn = document.getElementById('view-previous-btn');
+        const timerContainer = document.getElementById('timer-container');
+        const timerDisplay = document.getElementById('timer');
+        const quizInterface = document.getElementById('quiz-interface');
+        const questionText = document.getElementById('question-text-1');
+        const optionsContainer = document.getElementById('options-1');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressFill = document.getElementById('progress-fill');
+        const answeredCount = document.getElementById('answered-count');
+        const flaggedCount = document.getElementById('flagged-count');
+        const questionGrid = document.getElementById('question-grid');
+        const reviewBtn = document.getElementById('review-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const resultsContainer = document.getElementById('results-container');
+        const scoreValue = document.getElementById('score-value');
+        const scorePercentage = document.getElementById('score-percentage');
+        const scoreMessage = document.getElementById('score-message');
+        const emailStatus = document.getElementById('email-status');
+        const resultsDetails = document.getElementById('results-details');
+        const retakeBtn = document.getElementById('retake-btn');
+        const viewAllResultsBtn = document.getElementById('view-all-results-btn');
+        const allResultsContainer = document.getElementById('all-results-container');
+        const downloadPdfBtn = document.getElementById('download-pdf-btn');
+        const downloadCsvBtn = document.getElementById('download-csv-btn');
+        const leaderboardBody = document.getElementById('leaderboard-body');
+        const resultsTableBody = document.getElementById('results-table-body');
+        const noResults = document.getElementById('no-results');
+        const backToResultsBtn = document.getElementById('back-to-results-btn');
+        const retakeFromAllBtn = document.getElementById('retake-from-all-btn');
+
+        // Check if email has already been used
+        function checkEmailExists(email) {
+            const allResults = JSON.parse(localStorage.getItem('biologyQuizResults')) || [];
+            return allResults.find(result => result.studentInfo.email.toLowerCase() === email.toLowerCase());
+        }
+
+        // Initialize the quiz
+        function initQuiz() {
+            // Create question navigation grid
+            createQuestionGrid();
+            
+            // Load the first question
+            loadQuestion(currentQuestion);
+            
+            // Update progress
+            updateProgress();
+            
+            // Start the timer
+            startTimer();
+        }
+
+        // Create question navigation grid
+        function createQuestionGrid() {
+            questionGrid.innerHTML = '';
+            
+            quizQuestions.forEach((question, index) => {
+                const gridItem = document.createElement('div');
+                gridItem.className = 'question-grid-item';
+                gridItem.textContent = index + 1;
+                gridItem.dataset.question = index + 1;
+                
+                if (index === 0) {
+                    gridItem.classList.add('current');
+                }
+                
+                gridItem.addEventListener('click', () => {
+                    navigateToQuestion(index + 1);
+                });
+                
+                questionGrid.appendChild(gridItem);
+            });
+        }
+
+        // Load a specific question
+        function loadQuestion(questionNumber) {
+            const question = quizQuestions[questionNumber - 1];
+            
+            // Update question text
+            questionText.textContent = question.question;
+            
+            // Update options
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                if (userAnswers[questionNumber - 1] === index) {
+                    optionElement.classList.add('selected');
+                }
+                
+                const optionLabel = document.createElement('div');
+                optionLabel.className = 'option-label';
+                optionLabel.textContent = String.fromCharCode(65 + index); // A, B, C, D
+                
+                const optionText = document.createElement('div');
+                optionText.className = 'option-text';
+                optionText.textContent = option;
+                
+                optionElement.appendChild(optionLabel);
+                optionElement.appendChild(optionText);
+                
+                optionElement.addEventListener('click', () => {
+                    selectOption(questionNumber, index);
+                });
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Update flag button
+            const flagBtn = document.querySelector('.flag-btn');
+            flagBtn.dataset.question = questionNumber;
+            if (flaggedQuestions[questionNumber - 1]) {
+                flagBtn.classList.add('flagged');
+            } else {
+                flagBtn.classList.remove('flagged');
+            }
+            
+            // Update navigation buttons
+            prevBtn.disabled = questionNumber === 1;
+            nextBtn.textContent = questionNumber === quizQuestions.length ? 'Finish' : 'Next';
+            
+            // Update question grid
+            updateQuestionGrid(questionNumber);
+        }
+
+        // Select an option for a question
+        function selectOption(questionNumber, optionIndex) {
+            userAnswers[questionNumber - 1] = optionIndex;
+            
+            // Update UI
+            const options = document.querySelectorAll('.option');
+            options.forEach((option, index) => {
+                if (index === optionIndex) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+            
+            // Update progress
+            updateProgress();
+        }
+
+        // Navigate to a specific question
+        function navigateToQuestion(questionNumber) {
+            currentQuestion = questionNumber;
+            loadQuestion(currentQuestion);
+        }
+
+        // Update progress indicators
+        function updateProgress() {
+            const answered = userAnswers.filter(answer => answer !== null).length;
+            const flagged = flaggedQuestions.filter(flag => flag).length;
+            
+            answeredCount.textContent = answered;
+            flaggedCount.textContent = flagged;
+            
+            const progressPercentage = (answered / quizQuestions.length) * 100;
+            progressFill.style.width = `${progressPercentage}%`;
+            
+            // Update question grid
+            updateQuestionGrid(currentQuestion);
+        }
+
+        // Update question grid indicators
+        function updateQuestionGrid(currentQuestionNum) {
+            const gridItems = document.querySelectorAll('.question-grid-item');
+            
+            gridItems.forEach((item, index) => {
+                // Remove current class from all items
+                item.classList.remove('current');
+                
+                // Add appropriate classes based on state
+                if (index + 1 === currentQuestionNum) {
+                    item.classList.add('current');
+                }
+                
+                if (userAnswers[index] !== null) {
+                    item.classList.add('answered');
+                } else {
+                    item.classList.remove('answered');
+                }
+                
+                if (flaggedQuestions[index]) {
+                    item.classList.add('flagged');
+                } else {
+                    item.classList.remove('flagged');
+                }
+            });
+        }
+
+        // Start the quiz timer
+        function startTimer() {
+            quizStarted = true;
+            timer = setInterval(() => {
+                timeLeft--;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    submitQuiz();
+                    return;
+                }
+                
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        // Update timer display
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Add warning styles when time is running low
+            if (timeLeft <= 300) { // 5 minutes
+                timerDisplay.classList.add('warning');
+            }
+            
+            if (timeLeft <= 60) { // 1 minute
+                timerDisplay.classList.add('danger');
+            }
+        }
+
+        // Submit the quiz
+        function submitQuiz() {
+            clearInterval(timer);
+            
+            // Calculate score
+            let score = 0;
+            quizQuestions.forEach((question, index) => {
+                if (userAnswers[index] === question.correctAnswer) {
+                    score++;
+                }
+            });
+            
+            const percentage = Math.round((score / quizQuestions.length) * 100);
+            
+            // Save results
+            saveResults(score, percentage);
+            
+            // Display results
+            displayResults(score, percentage);
+        }
+
+        // Save quiz results to localStorage
+        function saveResults(score, percentage) {
+            const results = {
+                studentInfo: studentInfo,
+                answers: userAnswers,
+                score: score,
+                percentage: percentage,
+                timeTaken: 30 * 60 - timeLeft,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Get existing results from localStorage
+            let allResults = JSON.parse(localStorage.getItem('biologyQuizResults')) || [];
+            
+            // Check if this email already has a result
+            const existingIndex = allResults.findIndex(
+                result => result.studentInfo.email.toLowerCase() === studentInfo.email.toLowerCase()
+            );
+            
+            // If exists, replace it; otherwise add new
+            if (existingIndex !== -1) {
+                allResults[existingIndex] = results;
+            } else {
+                allResults.push(results);
+            }
+            
+            // Save back to localStorage
+            localStorage.setItem('biologyQuizResults', JSON.stringify(allResults));
+        }
+
+        // Format time in MM:SS format
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        // Display quiz results
+        function displayResults(score, percentage) {
+            // Hide quiz interface, show results
+            quizInterface.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+            
+            // Update score display
+            scoreValue.textContent = score;
+            scorePercentage.textContent = `${percentage}%`;
+            
+            // Set score message
+            if (percentage >= 80) {
+                scoreMessage.textContent = "Excellent! You have a strong understanding of biology concepts.";
+            } else if (percentage >= 60) {
+                scoreMessage.textContent = "Good job! You have a good grasp of biology fundamentals.";
+            } else if (percentage >= 40) {
+                scoreMessage.textContent = "Fair performance. Consider reviewing the areas you struggled with.";
+            } else {
+                scoreMessage.textContent = "You may need more practice. Review the concepts and try again.";
+            }
+            
+            // Display detailed results
+            resultsDetails.innerHTML = '';
+            quizQuestions.forEach((question, index) => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                
+                const isCorrect = userAnswers[index] === question.correctAnswer;
+                
+                if (isCorrect) {
+                    resultItem.classList.add('correct');
+                } else {
+                    resultItem.classList.add('incorrect');
+                }
+                
+                let resultHTML = `
+                    <p><strong>Question ${index + 1}:</strong> ${question.question}</p>
+                    <p>Your answer: ${userAnswers[index] !== null ? question.options[userAnswers[index]] : 'Not answered'}</p>
+                `;
+                
+                if (!isCorrect) {
+                    resultHTML += `<p class="correct-answer">Correct answer: ${question.options[question.correctAnswer]}</p>`;
+                }
+                
+                resultItem.innerHTML = resultHTML;
+                resultsDetails.appendChild(resultItem);
+            });
+        }
+
+        // Display all results compilation
+        function displayAllResults() {
+            resultsContainer.classList.add('hidden');
+            allResultsContainer.classList.remove('hidden');
+            
+            // Get results from localStorage
+            const allResults = JSON.parse(localStorage.getItem('biologyQuizResults')) || [];
+            
+            if (allResults.length === 0) {
+                noResults.classList.remove('hidden');
+                document.getElementById('results-table').classList.add('hidden');
+                leaderboardBody.innerHTML = '<div class="leaderboard-item"><div class="leaderboard-name" style="text-align: center;">No results available</div></div>';
+            } else {
+                noResults.classList.add('hidden');
+                document.getElementById('results-table').classList.remove('hidden');
+                
+                // Sort results by score (descending)
+                const sortedResults = [...allResults].sort((a, b) => b.score - a.score);
+                
+                // Populate leaderboard
+                leaderboardBody.innerHTML = '';
+                sortedResults.forEach((result, index) => {
+                    const leaderboardItem = document.createElement('div');
+                    leaderboardItem.className = 'leaderboard-item';
+                    
+                    // Highlight current user
+                    if (result.studentInfo.email === studentInfo.email) {
+                        leaderboardItem.style.backgroundColor = '#e1f5fe';
+                        leaderboardItem.style.fontWeight = 'bold';
+                    }
+                    
+                    leaderboardItem.innerHTML = `
+                        <div class="leaderboard-rank">${index + 1}</div>
+                        <div class="leaderboard-name">${result.studentInfo.name}</div>
+                        <div class="leaderboard-score">${result.score}/50</div>
+                        <div class="leaderboard-percentage">${result.percentage}%</div>
+                    `;
+                    
+                    leaderboardBody.appendChild(leaderboardItem);
+                });
+                
+                // Populate results table
+                resultsTableBody.innerHTML = '';
+                sortedResults.forEach((result, index) => {
+                    const row = document.createElement('tr');
+                    
+                    // Highlight current user
+                    if (result.studentInfo.email === studentInfo.email) {
+                        row.style.backgroundColor = '#e1f5fe';
+                        row.style.fontWeight = 'bold';
+                    }
+                    
+                    const timeTakenMinutes = Math.floor(result.timeTaken / 60);
+                    const timeTakenSeconds = result.timeTaken % 60;
+                    const formattedTime = `${timeTakenMinutes}:${timeTakenSeconds.toString().padStart(2, '0')}`;
+                    
+                    const date = new Date(result.timestamp);
+                    const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+                    
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${result.studentInfo.name}</td>
+                        <td>${result.studentInfo.email}</td>
+                        <td>${result.score}/50</td>
+                        <td>${result.percentage}%</td>
+                        <td>${formattedTime}</td>
+                        <td>${formattedDate}</td>
+                    `;
+                    
+                    resultsTableBody.appendChild(row);
+                });
+            }
+        }
+
+        // Generate and download PDF of all results
+        function downloadResultsPDF() {
+            const allResults = JSON.parse(localStorage.getItem('biologyQuizResults')) || [];
+            
+            if (allResults.length === 0) {
+                alert('No results to download.');
+                return;
+            }
+            
+            // Sort results by score (descending)
+            const sortedResults = [...allResults].sort((a, b) => b.score - a.score);
+            
+            // Create PDF content
+            const pdfHTML = `
+                <div style="font-family: Arial, sans-serif; padding: 20px;">
+                    <h1 style="text-align: center; color: #2c7744; margin-bottom: 5px;">SIRKACADEMY</h1>
+                    <p style="text-align: center; color: #7f8c8d; margin-bottom: 20px;">Biology Quiz: Living Things & Cells - Results</p>
+                    <p style="text-align: center; color: #7f8c8d;">Generated on ${new Date().toLocaleString()}</p>
+                    
+                    <div style="margin: 30px 0;">
+                        <h2 style="color: #2c3e50; border-bottom: 2px solid #2c7744; padding-bottom: 10px;">Performance Summary</h2>
+                        <p><strong>Total Participants:</strong> ${allResults.length}</p>
+                        <p><strong>Average Score:</strong> ${Math.round(allResults.reduce((sum, result) => sum + result.score, 0) / allResults.length)}/50</p>
+                        <p><strong>Average Percentage:</strong> ${Math.round(allResults.reduce((sum, result) => sum + result.percentage, 0) / allResults.length)}%</p>
+                    </div>
+                    
+                    <h2 style="color: #2c3e50; border-bottom: 2px solid #2c7744; padding-bottom: 10px;">Leaderboard</h2>
+                    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                        <thead>
+                            <tr style="background-color: #2c3e50; color: white;">
+                                <th style="padding: 10px; border: 1px solid #ddd;">Rank</th>
+                                <th style="padding: 10px; border: 1px solid #ddd;">Name</th>
+                                <th style="padding: 10px; border: 1px solid #ddd;">Score</th>
+                                <th style="padding: 10px; border: 1px solid #ddd;">Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${sortedResults.map((result, index) => `
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">${index + 1}</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">${result.studentInfo.name}</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">${result.score}/50</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">${result.percentage}%</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <div style="margin-top: 30px; page-break-before: always;">
+                        <h2 style="color: #2c3e50; border-bottom: 2px solid #2c7744; padding-bottom: 10px;">Detailed Results</h2>
+                        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                            <thead>
+                                <tr style="background-color: #2c3e50; color: white;">
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Rank</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Name</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Email</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Score</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Percentage</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Time Taken</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${sortedResults.map((result, index) => {
+                                    const timeTakenMinutes = Math.floor(result.timeTaken / 60);
+                                    const timeTakenSeconds = result.timeTaken % 60;
+                                    const formattedTime = `${timeTakenMinutes}:${timeTakenSeconds.toString().padStart(2, '0')}`;
+                                    
+                                    const date = new Date(result.timestamp);
+                                    const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+                                    
+                                    return `
+                                        <tr>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${index + 1}</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${result.studentInfo.name}</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${result.studentInfo.email}</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${result.score}/50</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${result.percentage}%</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${formattedTime}</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd;">${formattedDate}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            
+            // For demo purposes, show a preview and download as HTML
+            const blob = new Blob([pdfHTML], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'SIRKACADEMY_Biology_Quiz_Results.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('PDF download started. In a real implementation, this would be a proper PDF file.');
+        }
+
+        // Export results as CSV
+        function exportResultsCSV() {
+            const allResults = JSON.parse(localStorage.getItem('biologyQuizResults')) || [];
+            
+            if (allResults.length === 0) {
+                alert('No results to export.');
+                return;
+            }
+            
+            // Sort results by score (descending)
+            const sortedResults = [...allResults].sort((a, b) => b.score - a.score);
+            
+            // Create CSV header
+            let csv = 'Rank,Name,Email,Score,Percentage,Time Taken,Date\n';
+            
+            // Add data rows
+            sortedResults.forEach((result, index) => {
+                const timeTakenMinutes = Math.floor(result.timeTaken / 60);
+                const timeTakenSeconds = result.timeTaken % 60;
+                const formattedTime = `${timeTakenMinutes}:${timeTakenSeconds.toString().padStart(2, '0')}`;
+                
+                const date = new Date(result.timestamp);
+                const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+                
+                csv += `${index + 1},"${result.studentInfo.name}","${result.studentInfo.email}",${result.score},${result.percentage}%,"${formattedTime}","${formattedDate}"\n`;
+            });
+            
+            // Create download link
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'SIRKACADEMY_Biology_Quiz_Results.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Clear all results
+        function clearResults() {
+            if (confirm('Are you sure you want to clear all quiz results? This action cannot be undone.')) {
+                localStorage.removeItem('biologyQuizResults');
+                displayAllResults();
+            }
+        }
+
+        // Show previous result if email exists
+        function showPreviousResult(email) {
+            const previous = checkEmailExists(email);
+            if (previous) {
+                attemptWarning.classList.remove('hidden');
+                previousResult.classList.remove('hidden');
+                
+                previousResultDetails.innerHTML = `
+                    <p><strong>Score:</strong> ${previous.score}/50 (${previous.percentage}%)</p>
+                    <p><strong>Date:</strong> ${new Date(previous.timestamp).toLocaleString()}</p>
+                `;
+                
+                return true;
+            }
+            return false;
+        }
+
+        // Event listeners
+        document.getElementById('start-quiz-btn').addEventListener('click', () => {
+            const name = document.getElementById('student-name').value.trim();
+            const email = document.getElementById('student-email').value.trim();
+            
+            if (!name || !email) {
+                alert('Please enter your name and email address.');
+                return;
+            }
+            
+            // Check if email already exists
+            if (checkEmailExists(email)) {
+                alert('This email has already been used to take the quiz. You can only take the quiz once.');
+                showPreviousResult(email);
+                return;
+            }
+            
+            studentInfo = { name, email };
+            
+            studentInfoForm.classList.add('hidden');
+            timerContainer.classList.remove('hidden');
+            quizInterface.classList.remove('hidden');
+            
+            initQuiz();
+        });
+
+        document.getElementById('student-email').addEventListener('blur', function() {
+            const email = this.value.trim();
+            if (email) {
+                showPreviousResult(email);
+            }
+        });
+
+        viewPreviousBtn.addEventListener('click', () => {
+            const email = document.getElementById('student-email').value.trim();
+            const previous = checkEmailExists(email);
+            if (previous) {
+                // Display the previous result
+                studentInfo = previous.studentInfo;
+                userAnswers = previous.answers;
+                displayResults(previous.score, previous.percentage);
+                studentInfoForm.classList.add('hidden');
+                resultsContainer.classList.remove('hidden');
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestion > 1) {
+                navigateToQuestion(currentQuestion - 1);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestion < quizQuestions.length) {
+                navigateToQuestion(currentQuestion + 1);
+            } else {
+                submitQuiz();
+            }
+        });
+
+        document.querySelector('.flag-btn').addEventListener('click', (e) => {
+            const questionNum = parseInt(e.target.dataset.question);
+            flaggedQuestions[questionNum - 1] = !flaggedQuestions[questionNum - 1];
+            e.target.classList.toggle('flagged');
+            updateProgress();
+        });
+
+        reviewBtn.addEventListener('click', () => {
+            const firstFlagged = flaggedQuestions.findIndex(flag => flag) + 1;
+            if (firstFlagged > 0) {
+                navigateToQuestion(firstFlagged);
+            } else {
+                alert('No questions have been flagged for review.');
+            }
+        });
+
+        submitBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to submit your quiz? You cannot change your answers after submission.')) {
+                submitQuiz();
+            }
+        });
+
+        retakeBtn.addEventListener('click', () => {
+            // Reset quiz state
+            currentQuestion = 1;
+            userAnswers = new Array(quizQuestions.length).fill(null);
+            flaggedQuestions = new Array(quizQuestions.length).fill(false);
+            timeLeft = 30 * 60;
+            
+            // Show student info form again
+            resultsContainer.classList.add('hidden');
+            studentInfoForm.classList.remove('hidden');
+            
+            // Reset form
+            document.getElementById('student-name').value = '';
+            document.getElementById('student-email').value = '';
+            previousResult.classList.add('hidden');
+            attemptWarning.classList.add('hidden');
+        });
+
+        viewAllResultsBtn.addEventListener('click', displayAllResults);
+
+        downloadPdfBtn.addEventListener('click', downloadResultsPDF);
+
+        downloadCsvBtn.addEventListener('click', exportResultsCSV);
+
+        backToResultsBtn.addEventListener('click', () => {
+            allResultsContainer.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+        });
+
+        retakeFromAllBtn.addEventListener('click', () => {
+            // Reset quiz state
+            currentQuestion = 1;
+            userAnswers = new Array(quizQuestions.length).fill(null);
+            flaggedQuestions = new Array(quizQuestions.length).fill(false);
+            timeLeft = 30 * 60;
+            
+            // Show student info form again
+            allResultsContainer.classList.add('hidden');
+            studentInfoForm.classList.remove('hidden');
+            
+            // Reset form
+            document.getElementById('student-name').value = '';
+            document.getElementById('student-email').value = '';
+            previousResult.classList.add('hidden');
+            attemptWarning.classList.add('hidden');
+        });
+    </script>
+</body>
+</html>
